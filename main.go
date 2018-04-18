@@ -19,9 +19,16 @@ var tournaments []Tournament
 func main() {
 	router := mux.NewRouter()
 
+	router.HandleFunc("/tournaments", TournamentList).Methods("GET")
 	router.HandleFunc("/tournament/create", TournamentCreate).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(":4001", router))
+}
+
+func TournamentList(w http.ResponseWriter, r *http.Request) {
+	t := tournaments
+
+	json.NewEncoder(w).Encode(t)
 }
 
 func TournamentCreate(w http.ResponseWriter, r *http.Request) {
@@ -37,5 +44,5 @@ func TournamentCreate(w http.ResponseWriter, r *http.Request) {
 
 	tournaments = append(tournaments, t)
 
-	json.NewEncoder(w).Encode(tournaments)
+	json.NewEncoder(w).Encode(t)
 }
