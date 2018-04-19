@@ -22,7 +22,7 @@ func main() {
 	router.HandleFunc("/tournaments", TournamentList).Methods("GET")
 	router.HandleFunc("/tournament/create", TournamentCreate).Methods("POST")
 
-	log.Fatal(http.ListenAndServe(":4001", router))
+	log.Fatal(http.ListenAndServe(":3000", router))
 }
 
 func TournamentList(w http.ResponseWriter, r *http.Request) {
