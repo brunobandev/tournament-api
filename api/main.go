@@ -6,17 +6,18 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // Tournament :)
 type Tournament struct {
-	ID   int    `json:"id"`
-	Name string `json:"name,omitempty"`
+	ID   bson.ObjectId `bson:"_id,omitempty" json:"id"`
+	Name string        `json:"name,omitempty"`
 }
 
-var tournaments []Tournament
-
 func main() {
+
 	router := mux.NewRouter()
 
 	router.HandleFunc("/tournaments", TournamentList).Methods("GET")
@@ -26,14 +27,31 @@ func main() {
 }
 
 func TournamentList(w http.ResponseWriter, r *http.Request) {
-	t := tournaments
 
-	json.NewEncoder(w).Encode(t)
+	var tournaments []Tournament
+
+	session, _ := mgo.Dial("172.17.0.2")
+	defer session.Close()
+
+	err := session.DB("local").C("tournaments").Find(nil).All(&tournaments)
+
+	if err != nil {
+		panic(err)
+	}
+
+	json.NewEncoder(w).Encode(tournaments)
 }
 
 func TournamentCreate(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
 
+	session, _ := mgo.Dial("172.17.0.2")
+	defer session.Close()
+
+	session.SetMode(mgo.Monotonic, true)
+
+	c := session.DB("local").C("tournaments")
+
+	decoder := json.NewDecoder(r.Body)
 	var t Tournament
 
 	err := decoder.Decode(&t)
@@ -42,7 +60,9 @@ func TournamentCreate(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	tournaments = append(tournaments, t)
+	_ = c.Insert(t)
+
+	// tournaments = append(tournaments, t)
 
 	json.NewEncoder(w).Encode(t)
 }
