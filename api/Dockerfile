@@ -14,5 +14,5 @@ RUN go install github.com/brunobandev/tournament-api/api
 # Set binary as entrypoint
 ENTRYPOINT /go/bin/api
 
-# Expose default port (3000)
-EXPOSE 3000 
+# Expose default port (4001)
+EXPOSE 4001 

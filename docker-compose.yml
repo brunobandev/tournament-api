@@ -1,7 +1,7 @@
 api:
   build: ./api
   ports: 
-    - 3000:3000
+    - 4001:4001
   volumes:
     - ./api:/go/src/github.com/brunobandev/tournament-api/api
   links:
